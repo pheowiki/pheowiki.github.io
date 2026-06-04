@@ -28,7 +28,7 @@ document.addEventListener(
         await Promise.all([
             loadComponent(
                 "header-container",
-                "http://pheowiki.github.io/assets/html/header.html"
+                "https://pheowiki.github.io/assets/html/header.html"
             ),
             loadComponent(
                 "sidebar-container",
