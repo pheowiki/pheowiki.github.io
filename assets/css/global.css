@@ -63,10 +63,14 @@ a:hover {
     margin: auto;
 }
 
-.sidebar {
+#sidebar-container {
     width: 220px;
-    padding: 20px;
     border-right: 1px solid var(--border);
+    flex-shrink: 0;
+}
+
+.sidebar {
+    padding: 20px;
 }
 
 .sidebar ul {
