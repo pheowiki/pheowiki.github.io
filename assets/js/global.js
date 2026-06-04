@@ -28,11 +28,11 @@ document.addEventListener(
         await Promise.all([
             loadComponent(
                 "header-container",
-                "/components/header.html"
+                "/assets/html/header.html"
             ),
             loadComponent(
                 "sidebar-container",
-                "/components/sidebar.html"
+                "/asssets/html/sidebar.html"
             )
         ]);
 
