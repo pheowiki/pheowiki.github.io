@@ -1,5 +1,67 @@
 <!DOCTYPE html>
-<html>
-<h1>Hello, world!</h1>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wiki Encyclopedia</title>
+    <link rel="stylesheet" href="assets/css/global.css">
+</head>
+<body>
+
+<header class="wiki-header">
+    <div class="logo">Wiki Encyclopedia</div>
+
+    <form class="search-form">
+        <input type="text" placeholder="Search articles...">
+        <button type="submit">Search</button>
+    </form>
+</header>
+
+<div class="container">
+
+    <aside class="sidebar">
+        <h3>Navigation</h3>
+
+        <ul>
+            <li><a href="#">Main Page</a></li>
+            <li><a href="#">Contents</a></li>
+            <li><a href="#">Featured Articles</a></li>
+            <li><a href="#">Current Events</a></li>
+            <li><a href="#">Random Article</a></li>
+        </ul>
+    </aside>
+
+    <main class="content">
+        <h1>Welcome to Wiki Encyclopedia</h1>
+
+        <p>
+            This encyclopedia contains thousands of community-written articles.
+        </p>
+
+        <section class="featured-box">
+            <h2>Featured Article</h2>
+            <p>
+                Example featured article summary goes here.
+            </p>
+            <a href="article.html">Read More</a>
+        </section>
+
+        <section class="featured-box">
+            <h2>Did You Know?</h2>
+            <ul>
+                <li>Interesting fact #1</li>
+                <li>Interesting fact #2</li>
+                <li>Interesting fact #3</li>
+            </ul>
+        </section>
+    </main>
+
+</div>
+
+<footer class="wiki-footer">
+    <p>Content available under Creative Commons Attribution-ShareAlike License.</p>
+</footer>
+
+<script src="assets/js/global.js"></script>
 </body>
 </html>
