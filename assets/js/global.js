@@ -28,11 +28,11 @@ document.addEventListener(
         await Promise.all([
             loadComponent(
                 "header-container",
-                "http://pheowiki.github.io/assets/html/header"
+                "http://pheowiki.github.io/assets/html/header.html"
             ),
             loadComponent(
                 "sidebar-container",
-                "https://pheowiki.github.io/assets/html/sidebar"
+                "https://pheowiki.github.io/assets/html/sidebar.html"
             )
         ]);
 
