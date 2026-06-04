@@ -1,44 +1,97 @@
-document.addEventListener("DOMContentLoaded", () => {
+async function loadComponent(elementId, file) {
+    const container = document.getElementById(elementId);
 
-    // Smooth scrolling for table of contents
-    document.querySelectorAll('.toc a').forEach(link => {
-        link.addEventListener('click', e => {
-            e.preventDefault();
+    if (!container) return;
 
-            const target = document.querySelector(
-                link.getAttribute('href')
+    try {
+        const response = await fetch(file);
+
+        if (!response.ok) {
+            throw new Error(
+                `Failed to load ${file}`
             );
+        }
 
-            if (target) {
-                target.scrollIntoView({
-                    behavior: 'smooth'
-                });
-            }
+        const html = await response.text();
+
+        container.innerHTML = html;
+    }
+    catch(error) {
+        console.error(error);
+    }
+}
+
+document.addEventListener(
+    "DOMContentLoaded",
+    async () => {
+
+        await Promise.all([
+            loadComponent(
+                "header-container",
+                "/components/header.html"
+            ),
+            loadComponent(
+                "sidebar-container",
+                "/components/sidebar.html"
+            )
+        ]);
+
+        initializeSearch();
+        initializeTOC();
+    }
+);
+
+function initializeSearch() {
+
+    const form =
+        document.querySelector(".search-form");
+
+    if (!form) return;
+
+    form.addEventListener(
+        "submit",
+        event => {
+
+            event.preventDefault();
+
+            const query =
+                document
+                .getElementById("wiki-search")
+                .value
+                .trim();
+
+            if (!query) return;
+
+            window.location.href =
+                `/search.html?q=${encodeURIComponent(query)}`;
+        }
+    );
+}
+
+function initializeTOC() {
+
+    document
+        .querySelectorAll(".toc a")
+        .forEach(link => {
+
+            link.addEventListener(
+                "click",
+                event => {
+
+                    event.preventDefault();
+
+                    const target =
+                        document.querySelector(
+                            link.getAttribute("href")
+                        );
+
+                    if (target) {
+
+                        target.scrollIntoView({
+                            behavior: "smooth"
+                        });
+                    }
+                }
+            );
         });
-    });
-
-    // Highlight current section
-    const sections = document.querySelectorAll("section[id]");
-
-    window.addEventListener("scroll", () => {
-        let current = "";
-
-        sections.forEach(section => {
-            const top = section.offsetTop - 120;
-
-            if (window.scrollY >= top) {
-                current = section.id;
-            }
-        });
-
-        document.querySelectorAll(".toc a").forEach(link => {
-            link.classList.remove("active");
-
-            if (link.getAttribute("href") === "#" + current) {
-                link.classList.add("active");
-            }
-        });
-    });
-
-    console.log("Wiki template loaded");
-});
+}
