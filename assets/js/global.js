@@ -41,6 +41,9 @@ document.addEventListener(
     }
 );
 
+// Run once when the page loads
+addFavicon("https://pheowiki.github.io/images/icon.png");
+
 function initializeSearch() {
 
     const form =
