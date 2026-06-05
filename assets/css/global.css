@@ -12,13 +12,6 @@
     box-sizing: border-box;
 }
 
-body {
-    font-family: Georgia, serif;
-    background: var(--background);
-    color: #202122;
-    line-height: 1.6;
-}
-
 a {
     color: var(--link);
     text-decoration: none;
