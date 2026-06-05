@@ -34,6 +34,36 @@
         return age;
     }
 
+    function calculateElapsed(year, month, day) {
+        if (!month || !day) return null;
+
+        const today = new Date();
+        const start = new Date(year, month - 1, day);
+
+        let years = today.getFullYear() - start.getFullYear();
+        let months = today.getMonth() - start.getMonth();
+        let days = today.getDate() - start.getDate();
+
+        if (days < 0) {
+            months--;
+
+            const prevMonth = new Date(
+                today.getFullYear(),
+                today.getMonth(),
+                0
+            );
+
+            days += prevMonth.getDate();
+        }
+
+        if (months < 0) {
+            years--;
+            months += 12;
+        }
+
+        return { years, months, days };
+    }
+
     function formatDate(input) {
         const parts = input.trim().split("-");
 
@@ -53,7 +83,8 @@
 
         return {
             display,
-            yearsAgo: calculateYearsAgo(year, month, day)
+            yearsAgo: calculateYearsAgo(year, month, day),
+            elapsed: calculateElapsed(year, month, day)
         };
     }
 
@@ -66,6 +97,25 @@
         if (format === "person") {
             el.textContent =
                 `${result.display} (aged ${result.yearsAgo})`;
+        } else if (format === "format-days" && result.elapsed) {
+            const { years, months, days } = result.elapsed;
+
+            let ageText;
+
+            if (years > 0) {
+                ageText =
+                    months > 0
+                        ? `${years} year${years !== 1 ? "s" : ""}, ${months} month${months !== 1 ? "s" : ""} ago`
+                        : `${years} year${years !== 1 ? "s" : ""} ago`;
+            } else if (months > 0) {
+                ageText =
+                    `${months} month${months !== 1 ? "s" : ""}, ${days} day${days !== 1 ? "s" : ""} ago`;
+            } else {
+                ageText =
+                    `${days} day${days !== 1 ? "s" : ""} ago`;
+            }
+
+            el.textContent = `${result.display} (${ageText})`;
         } else {
             el.textContent =
                 `${result.display} (${result.yearsAgo} years ago)`;
@@ -73,6 +123,7 @@
     });
 })();
 
+// other
 async function loadComponent(elementId, file) {
     const container = document.getElementById(elementId);
 
