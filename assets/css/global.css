@@ -45,20 +45,6 @@ a:hover {
     font-weight: bold;
 }
 
-.search-form {
-    display: flex;
-    gap: 10px;
-}
-
-.search-form input {
-    padding: 8px;
-    width: 250px;
-}
-
-.search-form button {
-    padding: 8px 12px;
-}
-
 .container {
     display: flex;
     max-width: 1400px;
