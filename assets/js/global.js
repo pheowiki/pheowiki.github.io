@@ -103,15 +103,15 @@ document.addEventListener(
         await Promise.all([
             loadComponent(
                 "header-container",
-                "https://pheowiki.github.io/assets/html/header.html"
+                "https://pheosjournal.github.io/assets/html/header.html"
             ),
             loadComponent(
                 "sidebar-container",
-                "https://pheowiki.github.io/assets/html/sidebar.html"
+                "https://pheosjournal.github.io/assets/html/sidebar.html"
             ),
             loadComponent(
                 "footer-container",
-                "https://pheowiki.github.io/assets/html/footer.html"
+                "https://pheosjournal.github.io/assets/html/footer.html"
             )
         ]);
 
@@ -133,7 +133,7 @@ function addFavicon(url) {
     link.href = url;
 }
 
-addFavicon("https://pheowiki.github.io/images/icon.png");
+addFavicon("https://pheosjournal.github.io/images/icon.png");
 
 function initializeSearch() {
 
