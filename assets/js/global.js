@@ -1,3 +1,78 @@
+(function () {
+    const monthNames = [
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+    ];
+
+    function ordinal(n) {
+        const v = n % 100;
+        if (v >= 11 && v <= 13) return n + "th";
+
+        switch (n % 10) {
+            case 1: return n + "st";
+            case 2: return n + "nd";
+            case 3: return n + "rd";
+            default: return n + "th";
+        }
+    }
+
+    function calculateYearsAgo(year, month, day) {
+        const today = new Date();
+        let age = today.getFullYear() - year;
+
+        if (month && day) {
+            const birthdayPassed =
+                today.getMonth() + 1 > month ||
+                (
+                    today.getMonth() + 1 === month &&
+                    today.getDate() >= day
+                );
+
+            if (!birthdayPassed) age--;
+        }
+
+        return age;
+    }
+
+    function formatDate(input) {
+        const parts = input.trim().split("-");
+
+        const year = parseInt(parts[0], 10);
+        const month = parts[1] ? parseInt(parts[1], 10) : null;
+        const day = parts[2] ? parseInt(parts[2], 10) : null;
+
+        let display;
+
+        if (year && month && day) {
+            display = `${monthNames[month - 1]} ${ordinal(day)} ${year}`;
+        } else if (year && month) {
+            display = `${monthNames[month - 1]} ${year}`;
+        } else {
+            display = `${year}`;
+        }
+
+        return {
+            display,
+            yearsAgo: calculateYearsAgo(year, month, day)
+        };
+    }
+
+    document.querySelectorAll(".date-age").forEach(el => {
+        const rawDate = el.textContent.trim();
+        const format = el.dataset.format || "";
+
+        const result = formatDate(rawDate);
+
+        if (format === "person") {
+            el.textContent =
+                `${result.display} (aged ${result.yearsAgo})`;
+        } else {
+            el.textContent =
+                `${result.display} (${result.yearsAgo} years ago)`;
+        }
+    });
+})();
+
 async function loadComponent(elementId, file) {
     const container = document.getElementById(elementId);
 
