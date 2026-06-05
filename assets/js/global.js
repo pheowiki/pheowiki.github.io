@@ -108,6 +108,10 @@ document.addEventListener(
             loadComponent(
                 "sidebar-container",
                 "https://pheowiki.github.io/assets/html/sidebar.html"
+            ),
+            loadComponent(
+                "footer-container",
+                "https://pheowiki.github.io/assets/html/footer.html"
             )
         ]);
 
