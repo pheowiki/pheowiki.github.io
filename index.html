@@ -339,14 +339,23 @@ function renderCalendar() {
 // ===
 // EVENT
 // ===
-                const link =
-                    document.createElement("a");
+let element;
 
-                link.className = "event";
-                link.href = event.link;
-                link.textContent = event.title;
+if (event.link) {
 
-                cell.appendChild(link);
+    element = document.createElement("a");
+    element.href = event.link;
+
+} else {
+
+    element = document.createElement("div");
+
+}
+
+element.className = "event";
+element.textContent = event.title;
+
+cell.appendChild(element);
             }
         });
 
