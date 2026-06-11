@@ -222,7 +222,33 @@ function setSeasonColor() {
     );
 }
 
-setSeasonColor();
+ // ==================================
+ // SET SEASON COLOR
+ // ==================================
+function setSeasonColor(date) {
+
+    const month = date.getMonth() + 1;
+
+    let color;
+
+    if (month >= 3 && month <= 5) {
+        color = "#ff69b4"; // Spring
+    }
+    else if (month >= 6 && month <= 8) {
+        color = "#f7c948"; // Summer
+    }
+    else if (month >= 9 && month <= 11) {
+        color = "#d9534f"; // Fall
+    }
+    else {
+        color = "#4a90e2"; // Winter
+    }
+
+    document.documentElement.style.setProperty(
+        "--accent",
+        color
+    );
+}
 
 // ======================================
 // CALENDAR
@@ -265,7 +291,7 @@ function eventOccurs(event, year, month, day) {
 }
 
 function renderCalendar() {
-
+    setSeasonColor(currentDate);
     calendarDays.innerHTML = "";
 
     const year = currentDate.getFullYear();
