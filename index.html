@@ -250,48 +250,14 @@ setSeasonColor(month);
 // CALENDAR
 // ======================================
 
-let currentDate = new Date();
-
-const monthTitle = document.getElementById("monthTitle");
-const calendarDays = document.getElementById("calendarDays");
-
-function eventOccurs(event, year, month, day) {
-
-    if (event.date) {
-        const d = new Date(event.date);
-
-        return (
-            d.getFullYear() === year &&
-            d.getMonth() + 1 === month &&
-            d.getDate() === day
-        );
-    }
-
-    if (event.repeat === "yearly") {
-        return (
-            event.month === month &&
-            event.day === day
-        );
-    }
-
-    if (event.repeat === "monthly") {
-        return event.day === day;
-    }
-
-    if (event.repeat === "weekly") {
-        const date = new Date(year, month - 1, day);
-        return date.getDay() === event.weekday;
-    }
-
-    return false;
-}
-
 function renderCalendar() {
 
     calendarDays.innerHTML = "";
 
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
+
+    setSeasonColor(month);
 
     monthTitle.textContent =
         currentDate.toLocaleString("default", {
@@ -324,135 +290,30 @@ function renderCalendar() {
 
         events.forEach(event => {
 
-            if (
-                eventOccurs(
-                    event,
-                    year,
-                    month + 1,
-                    day
-                )
-            ) {
-if (event.link) {
+            if (eventOccurs(event, year, month + 1, day)) {
 
-    const link = document.createElement("a");
+                if (event.link) {
 
-    link.className = "event";
-    link.href = event.link;
-    link.textContent = event.title;
+                    const link = document.createElement("a");
+                    link.className = "event";
+                    link.href = event.link;
+                    link.textContent = event.title;
 
-    cell.appendChild(link);
+                    cell.appendChild(link);
 
-} else {
+                } else {
 
-    const eventDiv = document.createElement("div");
+                    const eventDiv = document.createElement("div");
+                    eventDiv.className = "event";
+                    eventDiv.textContent = event.title;
 
-    eventDiv.className = "event";
-    eventDiv.textContent = event.title;
+                    cell.appendChild(eventDiv);
+                }
+            }
+        });
 
-    cell.appendChild(eventDiv);
+        calendarDays.appendChild(cell);
+    }
 }
-
-document
-    .getElementById("prevMonth")
-    .addEventListener("click", () => {
-        currentDate.setMonth(
-            currentDate.getMonth() - 1
-        );
-        renderCalendar();
-    });
-
-document
-    .getElementById("nextMonth")
-    .addEventListener("click", () => {
-        currentDate.setMonth(
-            currentDate.getMonth() + 1
-        );
-        renderCalendar();
-    });
-
-renderCalendar();
-
-monthTitle.addEventListener("click", () => {
-
-    const input = prompt(
-        "Enter month/year (MM/YYYY)",
-        `${String(currentDate.getMonth()+1).padStart(2,"0")}/${currentDate.getFullYear()}`
-    );
-
-    if (!input) return;
-
-    const match = input.match(/^(\d{1,2})\/(\d{4})$/);
-
-    if (!match) {
-        alert("Use MM/YYYY");
-        return;
-    }
-
-    const month = parseInt(match[1], 10);
-    const year = parseInt(match[2], 10);
-
-    if (month < 1 || month > 12) {
-        alert("Invalid month");
-        return;
-    }
-
-    currentDate = new Date(year, month - 1, 1);
-
-    renderCalendar();
-});
-
-function getAnniversary(event, year, month, day) {
-
-    if (!event.anniversaryDate) {
-        return null;
-    }
-
-    const start = new Date(event.anniversaryDate);
-
-    const startYear = start.getFullYear();
-    const startMonth = start.getMonth() + 1;
-    const startDay = start.getDate();
-
-    if (
-        month !== startMonth ||
-        day !== startDay
-    ) {
-        return null;
-    }
-
-    const years = year - startYear;
-
-    if (years <= 0) {
-        return null;
-    }
-
-    return `${years} year anniversary of ${event.title}`;
-}
-
-events.forEach(event => {
-
-    const anniversary = getAnniversary(
-        event,
-        year,
-        month + 1,
-        day
-    );
-
-    if (!anniversary) return;
-
-    const item = document.createElement(
-        event.link ? "a" : "div"
-    );
-
-    item.className = "event anniversary";
-
-    if (event.link) {
-        item.href = event.link;
-    }
-
-    item.textContent = anniversary;
-
-    cell.appendChild(item);
-});
 </script>
 </html>
