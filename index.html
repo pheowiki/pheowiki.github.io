@@ -325,47 +325,40 @@ function renderCalendar() {
         num.textContent = day;
 
         cell.appendChild(num);
-//=================
+
         events.forEach(event => {
 
+            if (
+                eventOccurs(
+                    event,
+                    year,
+                    month + 1,
+                    day
+                )
+            ) {
+// ===
+// EVENT
+// ===
+let element;
 
-    const anniversary =
-        getAnniversary(
-            event,
-            year,
-            month + 1,
-            day
-        );
+if (event.link) {
 
-    if (!anniversary)
-        return;
+    element = document.createElement("a");
+    element.href = event.link;
 
-    let element;
+} else {
 
-    if (event.link) {
+    element = document.createElement("div");
 
-        element =
-            document.createElement("a");
+}
 
-        element.href = event.link;
+element.className = "event";
+element.textContent = event.title;
 
-    } else {
+cell.appendChild(element);
+            }
+        });
 
-        element =
-            document.createElement("div");
-
-    }
-
-    element.className =
-        "event anniversary";
-
-    element.textContent =
-        anniversary.text;
-
-    cell.appendChild(element);
-
-});
-        //===========================
         calendarDays.appendChild(cell);
     }
 }
