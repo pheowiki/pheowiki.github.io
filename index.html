@@ -13,9 +13,7 @@
     padding: 1rem;
     font-family: Arial, sans-serif;
 }
-.anniversary {
-    background: var(--anniversary);
-}
+
 .calendar-header {
     display: flex;
     justify-content: space-between;
@@ -71,15 +69,6 @@
 .empty {
     background: #fafafa;
 }
-    
-.month-title {
-    cursor: pointer;
-}
-
-:root {
-    --accent: #4a90e2;
-    --anniversary: #999;
-}
 </style>
 
 <head>
@@ -118,7 +107,7 @@
 <div id="calendar-widget">
     <div class="calendar-header">
         <button id="prevMonth">&lt;</button>
-        <h2 id="monthTitle" class="month-title"></h2>
+        <h2 id="monthTitle"></h2>
         <button id="nextMonth">&gt;</button>
     </div>
 
@@ -157,37 +146,30 @@ const events = [
     {
         title: "Banned from Saki's Autism Adventure and Friends",
         date: "2026-06-10",
-        anniversaryDate: "2026-06-10",
     },
     {
         title: "Banned from Kandy's hangout for cool people ^_^",
         date: "2026-06-05",
-        anniversaryDate: "2026-06-05",
     },
     {
         title: "Banned from Sayori’s Literature Club",
         date: "2026-05-24",
-        anniversaryDate: "2026-05-24",
     },
     {
         title: "Banned from Korone Dog House",
         date: "2026-05-24",
-        anniversaryDate: "2026-05-24",
     },
     {
         title: "Banned from ᰔ・Cinnamon cat Cafe ｡°✧",
         date: "2026-05-24",
-        anniversaryDate: "2026-05-24",
     },
     {
         title: "Banned from ︶꒦🎀𝐃𝐨𝐤𝐢 𝐃𝐨𝐤𝐢 𝐋𝐢𝐭𝐞𝐫𝐚𝐭𝐮𝐫𝐞 𝐂𝐥𝐮𝐛 (𝑨𝒄𝒕 2) ღ˚",
         date: "2026-05-20",
-        anniversaryDate: "2026-05-20",
     },
     {
         title: "Banned from 📕✒️ℓιтεяαтυяε cℓυв!!!🖋️📕🌸",
         date: "2026-05-11",
-        anniversaryDate: "2026-05-11",
     },
     {
         title: "Pheodora's birthday",
@@ -216,39 +198,71 @@ const events = [
 // SEASON COLORS
 // ======================================
 
-function setSeasonColor(displayMonth) {
+function setSeasonColor() {
+    const month = new Date().getMonth() + 1;
 
     let color;
 
-    // Spring
-    if (displayMonth >= 2 && displayMonth <= 4) {
-        color = "#ff69b4";
+    if (month >= 3 && month <= 5) {
+        color = "#ff69b4"; // Spring pink
     }
-
-    // Summer
-    else if (displayMonth >= 5 && displayMonth <= 7) {
-        color = "#f7c948";
+    else if (month >= 6 && month <= 8) {
+        color = "#f7c948"; // Summer yellow
     }
-
-    // Fall
-    else if (displayMonth >= 8 && displayMonth <= 10) {
-        color = "#d9534f";
+    else if (month >= 9 && month <= 11) {
+        color = "#d9534f"; // Fall red
     }
-
-    // Winter
     else {
-        color = "#4a90e2";
+        color = "#4a90e2"; // Winter blue
     }
 
-    document.documentElement.style
-        .setProperty("--accent", color);
+    document.documentElement.style.setProperty(
+        "--accent",
+        color
+    );
 }
 
-setSeasonColor(month);
+setSeasonColor();
 
 // ======================================
 // CALENDAR
 // ======================================
+
+let currentDate = new Date();
+
+const monthTitle = document.getElementById("monthTitle");
+const calendarDays = document.getElementById("calendarDays");
+
+function eventOccurs(event, year, month, day) {
+
+    if (event.date) {
+        const d = new Date(event.date);
+
+        return (
+            d.getFullYear() === year &&
+            d.getMonth() + 1 === month &&
+            d.getDate() === day
+        );
+    }
+
+    if (event.repeat === "yearly") {
+        return (
+            event.month === month &&
+            event.day === day
+        );
+    }
+
+    if (event.repeat === "monthly") {
+        return event.day === day;
+    }
+
+    if (event.repeat === "weekly") {
+        const date = new Date(year, month - 1, day);
+        return date.getDay() === event.weekday;
+    }
+
+    return false;
+}
 
 function renderCalendar() {
 
@@ -256,8 +270,6 @@ function renderCalendar() {
 
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
-
-    setSeasonColor(month);
 
     monthTitle.textContent =
         currentDate.toLocaleString("default", {
@@ -290,30 +302,47 @@ function renderCalendar() {
 
         events.forEach(event => {
 
-            if (eventOccurs(event, year, month + 1, day)) {
+            if (
+                eventOccurs(
+                    event,
+                    year,
+                    month + 1,
+                    day
+                )
+            ) {
+                const link =
+                    document.createElement("a");
 
-                if (event.link) {
+                link.className = "event";
+                link.href = event.link;
+                link.textContent = event.title;
 
-                    const link = document.createElement("a");
-                    link.className = "event";
-                    link.href = event.link;
-                    link.textContent = event.title;
-
-                    cell.appendChild(link);
-
-                } else {
-
-                    const eventDiv = document.createElement("div");
-                    eventDiv.className = "event";
-                    eventDiv.textContent = event.title;
-
-                    cell.appendChild(eventDiv);
-                }
+                cell.appendChild(link);
             }
         });
 
         calendarDays.appendChild(cell);
     }
 }
+
+document
+    .getElementById("prevMonth")
+    .addEventListener("click", () => {
+        currentDate.setMonth(
+            currentDate.getMonth() - 1
+        );
+        renderCalendar();
+    });
+
+document
+    .getElementById("nextMonth")
+    .addEventListener("click", () => {
+        currentDate.setMonth(
+            currentDate.getMonth() + 1
+        );
+        renderCalendar();
+    });
+
+renderCalendar();
 </script>
 </html>
