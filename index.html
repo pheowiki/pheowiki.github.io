@@ -414,41 +414,46 @@ cell.appendChild(element);
             }
         });
 
-        calendarDays.appendChild(cell);
-    }
+    // Anniversary events
+    events.forEach(event => {
+
+        const anniversary =
+            getAnniversary(
+                event,
+                year,
+                month + 1,
+                day
+            );
+
+        if (!anniversary)
+            return;
+
+        let element;
+
+        if (event.link) {
+
+            element = document.createElement("a");
+            element.href = event.link;
+
+        } else {
+
+            element = document.createElement("div");
+
+        }
+
+        element.className =
+            "event anniversary";
+
+        element.textContent =
+            anniversary.text;
+
+        cell.appendChild(element);
+
+    });
+
+    calendarDays.appendChild(cell);
 }
-// ======
-function getAnniversary(event, year, month, day) {
 
-    if (!event.anniversary)
-        return null;
-
-    const start = new Date(event.date);
-
-    const startYear = start.getFullYear();
-    const startMonth = start.getMonth() + 1;
-    const startDay = start.getDate();
-
-    if (
-        month !== startMonth ||
-        day !== startDay
-    ) {
-        return null;
-    }
-
-    const years =
-        year - startYear;
-
-    if (years <= 0)
-        return null;
-
-    return {
-        years,
-        text:
-            `${years} year anniversary of ${event.title}`
-    };
-}
-// ======
 document
     .getElementById("prevMonth")
     .addEventListener("click", () => {
