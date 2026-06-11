@@ -13,7 +13,9 @@
     padding: 1rem;
     font-family: Arial, sans-serif;
 }
-
+.anniversary {
+    background: var(--anniversary);
+}
 .calendar-header {
     display: flex;
     justify-content: space-between;
@@ -69,6 +71,15 @@
 .empty {
     background: #fafafa;
 }
+    
+.month-title {
+    cursor: pointer;
+}
+
+:root {
+    --accent: #4a90e2;
+    --anniversary: #999;
+}
 </style>
 
 <head>
@@ -107,7 +118,7 @@
 <div id="calendar-widget">
     <div class="calendar-header">
         <button id="prevMonth">&lt;</button>
-        <h2 id="monthTitle"></h2>
+        <h2 id="monthTitle" class="month-title"></h2>
         <button id="nextMonth">&gt;</button>
     </div>
 
@@ -146,30 +157,37 @@ const events = [
     {
         title: "Banned from Saki's Autism Adventure and Friends",
         date: "2026-06-10",
+        anniversaryDate: "2026-06-10",
     },
     {
         title: "Banned from Kandy's hangout for cool people ^_^",
         date: "2026-06-05",
+        anniversaryDate: "2026-06-05",
     },
     {
         title: "Banned from Sayori’s Literature Club",
         date: "2026-05-24",
+        anniversaryDate: "2026-05-24",
     },
     {
         title: "Banned from Korone Dog House",
         date: "2026-05-24",
+        anniversaryDate: "2026-05-24",
     },
     {
         title: "Banned from ᰔ・Cinnamon cat Cafe ｡°✧",
         date: "2026-05-24",
+        anniversaryDate: "2026-05-24",
     },
     {
         title: "Banned from ︶꒦🎀𝐃𝐨𝐤𝐢 𝐃𝐨𝐤𝐢 𝐋𝐢𝐭𝐞𝐫𝐚𝐭𝐮𝐫𝐞 𝐂𝐥𝐮𝐛 (𝑨𝒄𝒕 2) ღ˚",
         date: "2026-05-20",
+        anniversaryDate: "2026-05-20",
     },
     {
         title: "Banned from 📕✒️ℓιтεяαтυяε cℓυв!!!🖋️📕🌸",
         date: "2026-05-11",
+        anniversaryDate: "2026-05-11",
     },
     {
         title: "Pheodora's birthday",
@@ -198,31 +216,35 @@ const events = [
 // SEASON COLORS
 // ======================================
 
-function setSeasonColor() {
-    const month = new Date().getMonth() + 1;
+function setSeasonColor(displayMonth) {
 
     let color;
 
-    if (month >= 3 && month <= 5) {
-        color = "#ff69b4"; // Spring pink
-    }
-    else if (month >= 6 && month <= 8) {
-        color = "#f7c948"; // Summer yellow
-    }
-    else if (month >= 9 && month <= 11) {
-        color = "#d9534f"; // Fall red
-    }
-    else {
-        color = "#4a90e2"; // Winter blue
+    // Spring
+    if (displayMonth >= 2 && displayMonth <= 4) {
+        color = "#ff69b4";
     }
 
-    document.documentElement.style.setProperty(
-        "--accent",
-        color
-    );
+    // Summer
+    else if (displayMonth >= 5 && displayMonth <= 7) {
+        color = "#f7c948";
+    }
+
+    // Fall
+    else if (displayMonth >= 8 && displayMonth <= 10) {
+        color = "#d9534f";
+    }
+
+    // Winter
+    else {
+        color = "#4a90e2";
+    }
+
+    document.documentElement.style
+        .setProperty("--accent", color);
 }
 
-setSeasonColor();
+setSeasonColor(month);
 
 // ======================================
 // CALENDAR
@@ -310,19 +332,24 @@ function renderCalendar() {
                     day
                 )
             ) {
-                const link =
-                    document.createElement("a");
+if (event.link) {
 
-                link.className = "event";
-                link.href = event.link;
-                link.textContent = event.title;
+    const link = document.createElement("a");
 
-                cell.appendChild(link);
-            }
-        });
+    link.className = "event";
+    link.href = event.link;
+    link.textContent = event.title;
 
-        calendarDays.appendChild(cell);
-    }
+    cell.appendChild(link);
+
+} else {
+
+    const eventDiv = document.createElement("div");
+
+    eventDiv.className = "event";
+    eventDiv.textContent = event.title;
+
+    cell.appendChild(eventDiv);
 }
 
 document
@@ -344,5 +371,88 @@ document
     });
 
 renderCalendar();
+
+monthTitle.addEventListener("click", () => {
+
+    const input = prompt(
+        "Enter month/year (MM/YYYY)",
+        `${String(currentDate.getMonth()+1).padStart(2,"0")}/${currentDate.getFullYear()}`
+    );
+
+    if (!input) return;
+
+    const match = input.match(/^(\d{1,2})\/(\d{4})$/);
+
+    if (!match) {
+        alert("Use MM/YYYY");
+        return;
+    }
+
+    const month = parseInt(match[1], 10);
+    const year = parseInt(match[2], 10);
+
+    if (month < 1 || month > 12) {
+        alert("Invalid month");
+        return;
+    }
+
+    currentDate = new Date(year, month - 1, 1);
+
+    renderCalendar();
+});
+
+function getAnniversary(event, year, month, day) {
+
+    if (!event.anniversaryDate) {
+        return null;
+    }
+
+    const start = new Date(event.anniversaryDate);
+
+    const startYear = start.getFullYear();
+    const startMonth = start.getMonth() + 1;
+    const startDay = start.getDate();
+
+    if (
+        month !== startMonth ||
+        day !== startDay
+    ) {
+        return null;
+    }
+
+    const years = year - startYear;
+
+    if (years <= 0) {
+        return null;
+    }
+
+    return `${years} year anniversary of ${event.title}`;
+}
+
+events.forEach(event => {
+
+    const anniversary = getAnniversary(
+        event,
+        year,
+        month + 1,
+        day
+    );
+
+    if (!anniversary) return;
+
+    const item = document.createElement(
+        event.link ? "a" : "div"
+    );
+
+    item.className = "event anniversary";
+
+    if (event.link) {
+        item.href = event.link;
+    }
+
+    item.textContent = anniversary;
+
+    cell.appendChild(item);
+});
 </script>
 </html>
