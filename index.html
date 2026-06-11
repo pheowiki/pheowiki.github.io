@@ -69,11 +69,6 @@
 .empty {
     background: #fafafa;
 }
-
-.anniversary {
-    background: #d8d8d8;
-    color: #333;
-}
 </style>
 
 <head>
@@ -151,37 +146,30 @@ const events = [
     {
         title: "Banned from Saki's Autism Adventure and Friends",
         date: "2026-06-10",
-        anniversary: true,
     },
     {
         title: "Banned from Kandy's hangout for cool people ^_^",
         date: "2026-06-05",
-        anniversary: true,
     },
     {
         title: "Banned from Sayori’s Literature Club",
         date: "2026-05-24",
-        anniversary: true,
     },
     {
         title: "Banned from Korone Dog House",
         date: "2026-05-24",
-        anniversary: true,
     },
     {
         title: "Banned from ᰔ・Cinnamon cat Cafe ｡°✧",
         date: "2026-05-24",
-        anniversary: true,
     },
     {
         title: "Banned from ︶꒦🎀𝐃𝐨𝐤𝐢 𝐃𝐨𝐤𝐢 𝐋𝐢𝐭𝐞𝐫𝐚𝐭𝐮𝐫𝐞 𝐂𝐥𝐮𝐛 (𝑨𝒄𝒕 2) ღ˚",
         date: "2026-05-20",
-        anniversary: true,
     },
     {
         title: "Banned from 📕✒️ℓιтεяαтυяε cℓυв!!!🖋️📕🌸",
         date: "2026-05-11",
-        anniversary: true,
     },
     {
         title: "Pheodora's birthday",
@@ -337,21 +325,9 @@ function renderCalendar() {
         num.textContent = day;
 
         cell.appendChild(num);
-
+//=================
         events.forEach(event => {
 
-            if (
-                eventOccurs(
-                    event,
-                    year,
-                    month + 1,
-                    day
-                )
-            ) {
-// ===
-// EVENT
-// ===
-events.forEach(event => {
 
     const anniversary =
         getAnniversary(
@@ -389,71 +365,11 @@ events.forEach(event => {
     cell.appendChild(element);
 
 });
-                
+        //===========================
+        calendarDays.appendChild(cell);
+    }
+}
 // ======
-                
-let element;
-
-if (event.link) {
-
-    element = document.createElement("a");
-    element.href = event.link;
-
-} else {
-
-    element = document.createElement("div");
-
-}
-
-element.className = "event";
-element.textContent = event.title;
-                
-// ===
-
-cell.appendChild(element);
-            }
-        });
-
-    // Anniversary events
-    events.forEach(event => {
-
-        const anniversary =
-            getAnniversary(
-                event,
-                year,
-                month + 1,
-                day
-            );
-
-        if (!anniversary)
-            return;
-
-        let element;
-
-        if (event.link) {
-
-            element = document.createElement("a");
-            element.href = event.link;
-
-        } else {
-
-            element = document.createElement("div");
-
-        }
-
-        element.className =
-            "event anniversary";
-
-        element.textContent =
-            anniversary.text;
-
-        cell.appendChild(element);
-
-    });
-
-    calendarDays.appendChild(cell);
-}
-
 document
     .getElementById("prevMonth")
     .addEventListener("click", () => {
