@@ -70,16 +70,10 @@
     background: #fafafa;
 }
 
-.event-anniversary {
-    display: block;
-    background: #b0b0b0;
+.anniversary {
+    background: #999;
     color: white;
-    text-decoration: none;
-    padding: 3px 5px;
-    margin-top: 3px;
-    border-radius: 4px;
-    font-size: 0.8rem;
-    opacity: 0.8;
+    opacity: 0.75;
 }
 </style>
 
@@ -298,66 +292,41 @@ const calendarDays = document.getElementById("calendarDays");
 
 function eventOccurs(event, year, month, day) {
 
-    const original = new Date(event.date);
-
-    const originalYear = original.getFullYear();
-    const originalMonth = original.getMonth() + 1;
-    const originalDay = original.getDate();
-
-    if (!event.repeat) {
-        return (
-            originalYear === year &&
-            originalMonth === month &&
-            originalDay === day
-        );
-    }
+    const eventDate = event.date
+        ? new Date(event.date)
+        : null;
 
     if (event.repeat === "yearly") {
+
         return (
-            originalMonth === month &&
-            originalDay === day &&
-            year >= originalYear
+            eventDate.getMonth() + 1 === month &&
+            eventDate.getDate() === day
         );
     }
 
     if (event.repeat === "monthly") {
-        return (
-            originalDay === day &&
-            (
-                year > originalYear ||
-                month >= originalMonth
-            )
-        );
+        return eventDate.getDate() === day;
     }
 
     if (event.repeat === "weekly") {
 
-        const target = new Date(year, month - 1, day);
+        const date = new Date(year, month - 1, day);
 
         return (
-            target >= original &&
-            target.getDay() === original.getDay()
+            date.getDay() === eventDate.getDay()
+        );
+    }
+
+    if (eventDate) {
+
+        return (
+            eventDate.getFullYear() === year &&
+            eventDate.getMonth() + 1 === month &&
+            eventDate.getDate() === day
         );
     }
 
     return false;
-}
-
-function anniversaryOccurs(event, year, month, day) {
-
-    if (!event.anniversaries) {
-        return false;
-    }
-
-    const original = new Date(event.date);
-
-    const originalYear = original.getFullYear();
-
-    return (
-        year > originalYear &&
-        month === original.getMonth() + 1 &&
-        day === original.getDate()
-    );
 }
 
 function renderCalendar() {
@@ -395,29 +364,10 @@ function renderCalendar() {
         num.textContent = day;
 
         cell.appendChild(num);
-
-        events.forEach(event => {
-
+// ===
+// RENDER LOOP
+// ===
 events.forEach(event => {
-
-    if (
-        eventOccurs(
-            event,
-            year,
-            month + 1,
-            day
-        )
-    ) {
-
-        const link =
-            document.createElement("a");
-
-        link.className = "event";
-        link.href = event.link;
-        link.textContent = event.title;
-
-        cell.appendChild(link);
-    }
 
     if (
         anniversaryOccurs(
@@ -428,20 +378,45 @@ events.forEach(event => {
         )
     ) {
 
-        const anniversary =
-            document.createElement("a");
+        const anniversary = document.createElement("div");
 
         anniversary.className =
-            "event-anniversary";
-
-        anniversary.href = event.link;
+            "event anniversary";
 
         anniversary.textContent =
             `Anniversary of ${event.title}`;
 
+        anniversary.style.cursor = "pointer";
+
+        anniversary.addEventListener(
+            "click",
+            () => {
+
+                const original =
+                    new Date(event.date);
+
+                currentDate = new Date(
+                    original.getFullYear(),
+                    original.getMonth(),
+                    1
+                );
+
+                renderCalendar();
+            }
+        );
+
         cell.appendChild(anniversary);
     }
-});
+
+    if (
+        eventOccurs(
+            event,
+            year,
+            month + 1,
+            day
+        )
+    ) {
+
 // ===
 // EVENT
 // ===
@@ -469,6 +444,24 @@ cell.appendChild(element);
     }
 }
 // ======
+// ===
+// ANNIVERSARIES
+// ===
+function anniversaryOccurs(event, year, month, day) {
+
+    if (!event.anniversary || !event.date) {
+        return false;
+    }
+
+    const original = new Date(event.date);
+
+    return (
+        year > original.getFullYear() &&
+        original.getMonth() + 1 === month &&
+        original.getDate() === day
+    );
+}
+
 document
     .getElementById("prevMonth")
     .addEventListener("click", () => {
