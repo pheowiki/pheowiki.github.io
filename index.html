@@ -16,6 +16,7 @@
     transition: border-color var(--accent-transition),
                 box-shadow var(--accent-transition);
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+    overflow: hidden;
 }
 
 #calendar-widget:hover {
@@ -89,6 +90,7 @@
     display: flex;
     flex-direction: column;
     animation: fadeIn 0.4s ease-out;
+    overflow: hidden;
 }
 
 @keyframes fadeIn {
@@ -113,6 +115,15 @@
     color: #333;
     font-size: 0.95rem;
     user-select: none;
+    flex-shrink: 0;
+}
+
+.events-container {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    overflow-y: auto;
+    min-height: 0;
 }
 
 .event {
@@ -121,7 +132,6 @@
     color: white;
     text-decoration: none;
     padding: 5px 8px;
-    margin-top: 3px;
     border-radius: 5px;
     font-size: 0.75rem;
     transition: all 0.2s ease;
@@ -130,6 +140,7 @@
     white-space: nowrap;
     user-select: none;
     cursor: pointer;
+    flex-shrink: 0;
 }
 
 .event:hover {
@@ -145,6 +156,7 @@
 .event a {
     color: inherit;
     text-decoration: none;
+    display: block;
 }
 
 .empty {
@@ -169,6 +181,16 @@
 
 .other-month-event {
     opacity: 0.5;
+}
+
+.event-overflow-indicator {
+    font-size: 0.7rem;
+    text-align: center;
+    padding: 2px 4px;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 3px;
+    margin-top: auto;
+    flex-shrink: 0;
 }
 </style>
 
@@ -486,10 +508,17 @@ function createDayCell(year, month, day, isOtherMonth) {
 
     cell.appendChild(num);
 
+    // Create container for events
+    const eventsContainer = document.createElement("div");
+    eventsContainer.className = "events-container";
+
     // Adjust month for date calculations
     const adjustedMonth = month < 0 ? 11 : (month > 11 ? 0 : month);
     const adjustedYear = month < 0 ? year - 1 : (month > 11 ? year + 1 : year);
     const displayMonth = adjustedMonth + 1;
+
+    let eventCount = 0;
+    const MAX_VISIBLE_EVENTS = 3;
 
     // Check for events on this day
     events.forEach(event => {
@@ -503,38 +532,40 @@ function createDayCell(year, month, day, isOtherMonth) {
                 day
             )
         ) {
+            if (eventCount < MAX_VISIBLE_EVENTS) {
+                const anniversary = document.createElement("div");
 
-            const anniversary = document.createElement("div");
-
-            anniversary.className = "event anniversary";
-            
-            if (isOtherMonth) {
-                anniversary.classList.add("other-month-event");
-            }
-
-            anniversary.textContent =
-                `Anniversary of ${event.title}`;
-
-            anniversary.style.cursor = "pointer";
-
-            anniversary.addEventListener(
-                "click",
-                () => {
-
-                    const original =
-                        new Date(event.date);
-
-                    currentDate = new Date(
-                        original.getFullYear(),
-                        original.getMonth(),
-                        1
-                    );
-
-                    renderCalendar();
+                anniversary.className = "event anniversary";
+                
+                if (isOtherMonth) {
+                    anniversary.classList.add("other-month-event");
                 }
-            );
 
-            cell.appendChild(anniversary);
+                anniversary.textContent =
+                    `Anniversary of ${event.title}`;
+
+                anniversary.style.cursor = "pointer";
+
+                anniversary.addEventListener(
+                    "click",
+                    () => {
+
+                        const original =
+                            new Date(event.date);
+
+                        currentDate = new Date(
+                            original.getFullYear(),
+                            original.getMonth(),
+                            1
+                        );
+
+                        renderCalendar();
+                    }
+                );
+
+                eventsContainer.appendChild(anniversary);
+                eventCount++;
+            }
         }
 
         // Check for regular events
@@ -546,32 +577,51 @@ function createDayCell(year, month, day, isOtherMonth) {
                 day
             )
         ) {
+            if (eventCount < MAX_VISIBLE_EVENTS) {
+                let element;
 
-            let element;
+                if (event.link) {
 
-            if (event.link) {
+                    element = document.createElement("a");
+                    element.href = event.link;
 
-                element = document.createElement("a");
-                element.href = event.link;
+                } else {
 
-            } else {
+                    element = document.createElement("div");
 
-                element = document.createElement("div");
+                }
 
+                element.className = "event";
+                
+                if (isOtherMonth) {
+                    element.classList.add("other-month-event");
+                }
+                
+                element.textContent = event.title;
+
+                eventsContainer.appendChild(element);
+                eventCount++;
             }
-
-            element.className = "event";
-            
-            if (isOtherMonth) {
-                element.classList.add("other-month-event");
-            }
-            
-            element.textContent = event.title;
-
-            cell.appendChild(element);
         }
     });
 
+    // Add overflow indicator if there are more events
+    let totalEvents = 0;
+    events.forEach(event => {
+        if (eventOccurs(event, adjustedYear, displayMonth, day) ||
+            anniversaryOccurs(event, adjustedYear, displayMonth, day)) {
+            totalEvents++;
+        }
+    });
+
+    if (totalEvents > MAX_VISIBLE_EVENTS) {
+        const indicator = document.createElement("div");
+        indicator.className = "event-overflow-indicator";
+        indicator.textContent = `+${totalEvents - MAX_VISIBLE_EVENTS} more`;
+        eventsContainer.appendChild(indicator);
+    }
+
+    cell.appendChild(eventsContainer);
     return cell;
 }
 
